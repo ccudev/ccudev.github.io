@@ -16,7 +16,7 @@ ol{margin:0;padding-left:22px}li{margin:4px 0}
  <div class="arrow">→</div>
  <div class="box human"><b>2. Human review</b>The channel owner watches every video and approves or requests changes. Nothing is posted without explicit approval.</div>
  <div class="arrow">→</div>
- <div class="box yt"><b>3. YouTube Data API</b>videos.insert (resumable upload, status.privacyStatus=private + publishAt, containsSyntheticMedia=true) → scheduled publish at 21:00 KST.</div>
+ <div class="box yt"><b>3. YouTube Data API</b>videos.insert (resumable upload, status.privacyStatus=private + publishAt) → scheduled publish at 21:00 KST.</div>
 </div>
 <div class="row">
  <div class="box"><b>Authorization</b>OAuth 2.0 installed-app (loopback) flow, run once by the owner on their own computer. Scopes: youtube.upload, youtube.readonly. Refresh token stored only in the owner's private environment variables.</div>
