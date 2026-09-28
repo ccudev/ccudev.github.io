@@ -1,0 +1,33 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+body{font:15px/1.45 -apple-system,Segoe UI,Helvetica,Arial,sans-serif;margin:0;padding:28px;background:#fff;color:#1d1d1f;width:1044px}
+h1{font-size:22px;margin:0 0 4px}p.sub{margin:0 0 20px;color:#555}
+.row{display:flex;align-items:stretch;gap:10px;margin-bottom:14px}
+.box{flex:1;border:1.5px solid #b8c2cc;border-radius:10px;padding:12px 14px;background:#f7f9fb}
+.box b{display:block;margin-bottom:4px}.yt{border-color:#c4302b;background:#fff5f5}.human{border-color:#2a7a3b;background:#f3fbf4}
+.arrow{display:flex;align-items:center;font-size:22px;color:#667}
+h2{font-size:17px;margin:22px 0 10px}
+ol{margin:0;padding-left:22px}li{margin:4px 0}
+.note{margin-top:18px;padding:10px 14px;border-left:4px solid #2a7a3b;background:#f3fbf4}
+</style></head><body>
+<h1>Shorts Publisher — Architecture &amp; User Flow</h1>
+<p class="sub">Private, single-user tool. Operator: owner of the YouTube channel "기기묘묘 이야기". Google Cloud project: shorts-auto.</p>
+<div class="row">
+ <div class="box"><b>1. Production (no YouTube API)</b>Scripts are written from verified historical sources; narration and illustrations are generated; video is rendered with ffmpeg.</div>
+ <div class="arrow">→</div>
+ <div class="box human"><b>2. Human review</b>The channel owner watches every video and approves or requests changes. Nothing is posted without explicit approval.</div>
+ <div class="arrow">→</div>
+ <div class="box yt"><b>3. YouTube Data API</b>videos.insert (resumable upload, status.privacyStatus=private + publishAt, containsSyntheticMedia=true) → scheduled publish at 21:00 KST.</div>
+</div>
+<div class="row">
+ <div class="box"><b>Authorization</b>OAuth 2.0 installed-app (loopback) flow, run once by the owner on their own computer. Scopes: youtube.upload, youtube.readonly. Refresh token stored only in the owner's private environment variables.</div>
+ <div class="box yt"><b>Read-only calls</b>channels.list (mine=true) to confirm the connected channel; videos.list (statistics) once per video, 7 days after publishing, to record view counts in the owner's private sheet.</div>
+</div>
+<h2>User flow (daily)</h2>
+<ol>
+<li>The tool renders one Short (~60 s) from the owner's topic list.</li>
+<li>The owner receives the video for review and replies "OK" or with edits.</li>
+<li>On approval, the tool calls <b>videos.insert</b> once for that video with a scheduled publish time (Mon–Sat 21:00 KST).</li>
+<li>7 days later, the tool calls <b>videos.list</b> to read the view count.</li>
+</ol>
+<div class="note"><b>Expected usage:</b> about 1 upload per day (max 6 per week) + a few read calls; well within the default 10,000 units/day. Only the owner's own channel is ever accessed; there are no other users.</div>
+</body></html>
